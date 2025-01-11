@@ -1,7 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  staticPageGenerationTimeout: 120,
+  images: {
+    domains: ['test-vision-api-389008.el.r.appspot.com'],
+  },
+  env: {
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL || 'https://redlitchee.com',
+  },
 };
 
 export default nextConfig;
