@@ -6,7 +6,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const projects = await getAllProjects();
   
   // Base URL from environment or default
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://redlitchee.com'; // Replace with your actual domain
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://projects.redlitchee.com'; // Replace with your actual domain
 
   // Create project URLs
   const projectUrls = projects.map((project) => {

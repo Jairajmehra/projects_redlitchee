@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     domains: ['test-vision-api-389008.el.r.appspot.com'],
   },
   env: {
-    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL || 'https://redlitchee.com',
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL || 'https://projects.redlitchee.com',
   },
 };
 
