@@ -59,7 +59,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen p-8">
-      <header className="mb-12 flex justify-between items-center">
+      <header className="mb-12 flex flex-col md:flex-row items-center gap-4 md:justify-between">
         <h1 className="text-2xl font-bold">Redlitchee Realties</h1>
         <PropertyTypeSwitch onSwitch={setPropertyType} />
       </header>
