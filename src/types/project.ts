@@ -8,6 +8,15 @@ export interface Project {
   rera: string;
 }
 
+export interface CommercialProject {
+  name: string;
+  sizes: string;
+  possession: string;
+  brochureLink: string;
+  about: string;
+  coverImage: string;
+}
+
 export interface ApiResponse {
   limit: number;
   page: number;
