@@ -15,8 +15,7 @@ export default function CommercialPropertyCard({
   brochureLink,
   about,
   coverImage,
-  district,
-  projectType
+  district
 }: CommercialPropertyCardProps) {
   const router = useRouter();
   const [imgSrc, setImgSrc] = useState(coverImage || '/commercial_building.png');
@@ -30,7 +29,7 @@ export default function CommercialPropertyCard({
   const slug = getProjectSlug(name);
 
   const handleCardClick = () => {
-    router.push(`/commercial/${encodeURIComponent(name.toLowerCase().replace(/\s+/g, '-'))}`);
+    router.push(`/commercial/${slug}`);
   };
 
   return (
@@ -44,7 +43,7 @@ export default function CommercialPropertyCard({
         <div className="relative w-full h-48">
           <Image
             src={imgSrc}
-            alt={`${name} -  ${about} site image`}
+            alt={`${name} -  ${about} elevation image, ${district} district`}
             fill
             className="object-cover"
             onError={handleImageError}

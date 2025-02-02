@@ -76,7 +76,8 @@ export async function getAllCommercialProjects(): Promise<CommercialProject[]> {
       promoterName: project.promoterName,
       totalOpenArea: project.totalOpenArea,
       totalCoveredArea: project.totalCoveredArea,
-      totalAvailableUnits: project.totalAvailableUnits
+      totalAvailableUnits: project.totalAvailableUnits,
+      district: project.district
     }));
 
     projects.push(...formattedProjects);

@@ -16,6 +16,7 @@ interface CommercialApiResponse {
     planPassingAuthority: string;
     certificateLink: string;
     mobile: string;
+    district: string;
     promoterName: string;
     projectType: string;
     approvedDate: string;
@@ -79,6 +80,7 @@ export function useInfiniteCommercialProjects(limit: number = 6) {
         planPassingAuthority: project.planPassingAuthority,
         certificateLink: project.certificateLink,
         mobile: project.mobile,
+        district: project.district,
         promoterName: project.promoterName,
         projectType: project.projectType,
         approvedDate: project.approvedDate,

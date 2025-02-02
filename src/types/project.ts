@@ -20,6 +20,7 @@ export interface CommercialProject {
   planPassingAuthority: string;
   certificateLink: string;
   mobile: string;
+  district: string;
   promoterName: string;
   projectType: string;
   approvedDate: string;
@@ -30,7 +31,6 @@ export interface CommercialProject {
   totalUnits: string;
   totalAvailableUnits: string;
   numberOfTowers: string;
-
 }
 
 export interface ApiResponse {
@@ -54,6 +54,7 @@ export interface CommercialApiResponse {
     rera: string;
     planPassingAuthority: string;
     certificateLink: string;
+    district: string;
     mobile: string;
     totalUnits: string;
     approvedDate: string;
