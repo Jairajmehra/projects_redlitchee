@@ -13,8 +13,27 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  ),
   title: "Redlitchee Realties",
   description: "Find your dream property with Redlitchee Realties",
+  icons: {
+    icon: '/redlitchee_realties_logo.svg',  // favicon
+    apple: '/redlitchee_realties_logo.svg',  // Apple devices
+  },
+  openGraph: {
+    title: 'Redlitchee Realties',
+    description: 'Find your dream property with Redlitchee Realties',
+    images: [
+      {
+        url: '/og-image.png', // This is for social media/search results
+        width: 1200,
+        height: 630,
+        alt: 'Redlitchee Realties Logo',
+      }
+    ],
+  },
 };
 
 export default function RootLayout({
