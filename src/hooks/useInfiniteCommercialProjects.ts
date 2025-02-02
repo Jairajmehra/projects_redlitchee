@@ -11,6 +11,20 @@ interface CommercialApiResponse {
     brochureLink: string;
     coverPhotoLink: string;
     aboutProject: string;
+    rera: string;
+    planPassingAuthority: string;
+    certificateLink: string;
+    mobile: string;
+    promoterName: string;
+    projectType: string;
+    approvedDate: string;
+    projectLandArea: string;
+    totalOpenArea: string;
+    totalCoveredArea: string;
+    totalUnits: string;
+    totalAvailableUnits: string;
+    numberOfTowers: string;
+    projectStatus: string;
   }>;
   total: number;
   has_more: boolean;
@@ -58,7 +72,21 @@ export function useInfiniteCommercialProjects(limit: number = 6) {
         }),
         brochureLink: project.brochureLink,
         about: project.aboutProject,
-        coverImage: project.coverPhotoLink
+        coverImage: project.coverPhotoLink,
+        rera: project.rera,
+        planPassingAuthority: project.planPassingAuthority,
+        certificateLink: project.certificateLink,
+        mobile: project.mobile,
+        promoterName: project.promoterName,
+        projectType: project.projectType,
+        approvedDate: project.approvedDate,
+        projectLandArea: project.projectLandArea,
+        totalOpenArea: project.totalOpenArea,
+        totalCoveredArea: project.totalCoveredArea,
+        totalUnits: project.totalUnits,
+        totalAvailableUnits: project.totalAvailableUnits,
+        numberOfTowers: project.numberOfTowers,
+        projectStatus: project.projectStatus,
       }));
 
       cache.current.set(page, formattedProjects);

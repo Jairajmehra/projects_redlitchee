@@ -15,6 +15,21 @@ export interface CommercialProject {
   brochureLink: string;
   about: string;
   coverImage: string;
+  rera: string;
+  planPassingAuthority: string;
+  certificateLink: string;
+  mobile: string;
+  promoterName: string;
+  projectType: string;
+  approvedDate: string;
+  projectLandArea: string;
+  totalOpenArea: string;
+  totalCoveredArea: string;
+  projectStatus: string;
+  totalUnits: string;
+  totalAvailableUnits: string;
+  numberOfTowers: string;
+
 }
 
 export interface ApiResponse {
@@ -22,4 +37,33 @@ export interface ApiResponse {
   page: number;
   projects: Project[];
   total: number;
+}
+
+export interface CommercialApiResponse {
+  limit: number;
+  page: number;
+  projects: Array<{
+    name: string;
+    averageCarpetArea: string;
+    endDate: string;
+    brochureLink: string;
+    coverPhotoLink: string;
+    aboutProject: string;
+    rera: string;
+    planPassingAuthority: string;
+    certificateLink: string;
+    mobile: string;
+    totalUnits: string;
+    approvedDate: string;
+    numberOfTowers: string;
+    projectLandArea: string;
+    projectStatus: string;
+    projectType: string;
+    promoterName: string;
+    totalOpenArea: string;
+    totalCoveredArea: string;
+    totalAvailableUnits: string;
+  }>;
+  total: number;
+  has_more: boolean;
 } 
