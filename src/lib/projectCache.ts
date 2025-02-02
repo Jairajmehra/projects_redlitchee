@@ -60,6 +60,7 @@ export async function getAllCommercialProjects(): Promise<CommercialProject[]> {
         year: 'numeric'
       }),
       brochureLink: project.brochureLink,
+      description: project.description,
       about: project.aboutProject,
       coverImage: project.coverPhotoLink,
       rera: project.rera,

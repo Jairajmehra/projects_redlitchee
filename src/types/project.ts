@@ -14,6 +14,7 @@ export interface CommercialProject {
   possession: string;
   brochureLink: string;
   about: string;
+  description: string;
   coverImage: string;
   rera: string;
   planPassingAuthority: string;
@@ -44,6 +45,7 @@ export interface CommercialApiResponse {
   page: number;
   projects: Array<{
     name: string;
+    description: string;
     averageCarpetArea: string;
     endDate: string;
     brochureLink: string;

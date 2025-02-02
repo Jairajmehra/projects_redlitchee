@@ -10,6 +10,7 @@ interface CommercialApiResponse {
     endDate: string;
     brochureLink: string;
     coverPhotoLink: string;
+    description: string;
     aboutProject: string;
     rera: string;
     planPassingAuthority: string;
@@ -70,6 +71,7 @@ export function useInfiniteCommercialProjects(limit: number = 6) {
           month: 'long',
           year: 'numeric'
         }),
+        description: project.description,
         brochureLink: project.brochureLink,
         about: project.aboutProject,
         coverImage: project.coverPhotoLink,

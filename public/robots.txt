@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://projects.redlitchee.com/sitemap.xml 

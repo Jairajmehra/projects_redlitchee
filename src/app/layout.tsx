@@ -13,11 +13,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  title: "Gujarat Real Estate Directory | RERA Registered Projects in Ahmedabad, Surat, Vadodara & More",
+  description: "Explore Gujarat's most comprehensive real estate directory featuring RERA registered residential and commercial projects in Ahmedabad, Surat, Vadodara, Dholera, Jamnagar, Bhavnagar, Junagadh, Gandhinagar, and Rajkot. Find brochures, resale listings, and rental options—all in one place.",
+  keywords: "Gujarat real estate, Ahmedabad properties, Surat real estate, Vadodara projects, Dholera real estate, Jamnagar property, Bhavnagar realty, Junagadh real estate, Gandhinagar projects, Rajkot real estate, RERA registered, under construction, ready possession, property brochure directory, resale, rental",
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3004'
   ),
-  title: "Redlitchee Realties",
-  description: "Find your dream property with Redlitchee Realties",
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -28,24 +29,17 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: 'Redlitchee Realties',
-    description: 'Find your dream property with Redlitchee Realties',
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'Redlitchee Realties Logo',
-      }
-    ],
+    title: "Gujarat Real Estate Directory | RERA Registered Projects in Ahmedabad, Surat, Vadodara & More",
+    description: "Discover Gujarat's top real estate directory showcasing ready & upcoming RERA registered residential and commercial projects. Access brochures and explore resale and rental options in Ahmedabad, Surat, Vadodara, and beyond.",
+    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
   },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <head>
