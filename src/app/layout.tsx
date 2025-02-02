@@ -14,20 +14,25 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+    process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3004'
   ),
   title: "Redlitchee Realties",
   description: "Find your dream property with Redlitchee Realties",
   icons: {
-    icon: '/redlitchee_realties_logo.svg',  // favicon
-    apple: '/redlitchee_realties_logo.svg',  // Apple devices
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
   },
   openGraph: {
     title: 'Redlitchee Realties',
     description: 'Find your dream property with Redlitchee Realties',
     images: [
       {
-        url: '/og-image.png', // This is for social media/search results
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'Redlitchee Realties Logo',
