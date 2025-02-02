@@ -40,7 +40,7 @@ export function useInfiniteCommercialProjects(limit: number = 6) {
       }
 
       const response = await fetch(
-        `http://test-vision-api-389008.el.r.appspot.com/commercial_projects?page=${page}&limit=${limit}`
+        `https://test-vision-api-389008.el.r.appspot.com/commercial_projects?page=${page}&limit=${limit}`
       );
       
       if (!response.ok) {
