@@ -1,39 +1,68 @@
 import { MetadataRoute } from 'next';
-import { getAllProjects } from '@/lib/projectCache';
+import { getAllProjects, getAllCommercialProjects, getProjectSlug } from '@/lib/projectCache';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Get all projects
-  const projects = await getAllProjects();
-  
-  // Base URL from environment or default
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://projects.redlitchee.com'; // Replace with your actual domain
+  try {
+    const [residentialProjects, commercialProjects] = await Promise.all([
+      getAllProjects(),
+      getAllCommercialProjects()
+    ]);
+    
+    console.log('Commercial Projects Count:', commercialProjects.length); // Debug log
+    
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://projects.redlitchee.com';
 
-  // Create project URLs
-  const projectUrls = projects.map((project) => {
-    const slug = encodeURIComponent(project.name.toLowerCase().replace(/\s+/g, '-'));
-    return {
-      url: `${baseUrl}/projects/${slug}`,
-      lastModified: new Date(), // You might want to add a lastModified field to your project data
+    // Create residential project URLs
+    const residentialUrls = residentialProjects.map((project) => ({
+      url: `${baseUrl}/projects/${getProjectSlug(project.name)}`,
+      lastModified: new Date(),
       changeFrequency: 'weekly' as const,
       priority: 0.8,
-    };
-  });
+    }));
 
-  // Add other static routes
-  const staticRoutes = [
-    {
-      url: baseUrl,
+    // Create commercial project URLs
+    const commercialUrls = commercialProjects.map((project) => ({
+      url: `${baseUrl}/commercial/${getProjectSlug(project.name)}`,
       lastModified: new Date(),
-      changeFrequency: 'daily' as const,
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/projects`,
-      lastModified: new Date(),
-      changeFrequency: 'daily' as const,
-      priority: 0.9,
-    },
-  ];
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    }));
 
-  return [...staticRoutes, ...projectUrls];
-} 
+    console.log('Commercial URLs:', commercialUrls); // Debug log
+
+    // Add static routes
+    const staticRoutes = [
+      {
+        url: baseUrl,
+        lastModified: new Date(),
+        changeFrequency: 'daily' as const,
+        priority: 1,
+      },
+      {
+        url: `${baseUrl}/projects`,
+        lastModified: new Date(),
+        changeFrequency: 'daily' as const,
+        priority: 0.9,
+      },
+      {
+        url: `${baseUrl}/commercial`,
+        lastModified: new Date(),
+        changeFrequency: 'daily' as const,
+        priority: 0.9,
+      }
+    ];
+
+    return [...staticRoutes, ...residentialUrls, ...commercialUrls];
+  } catch (error) {
+    console.error('Error generating sitemap:', error);
+    // Return at least static routes if there's an error
+    return [
+      {
+        url: process.env.NEXT_PUBLIC_BASE_URL || 'https://projects.redlitchee.com',
+        lastModified: new Date(),
+        changeFrequency: 'daily' as const,
+        priority: 1,
+      }
+    ];
+  }
+}

@@ -89,11 +89,12 @@ export async function getAllCommercialProjects(): Promise<CommercialProject[]> {
 }
 
 export function getProjectSlug(name: string): string {
-  return name.toLowerCase().replace(/\s+/g, '-');
+  return encodeURIComponent(name.toLowerCase().replace(/\s+/g, '-'));
 }
 
-export function getProjectBySlug(slug: string): Promise<CommercialProject | null> {
-  return getAllCommercialProjects().then(projects => 
-    projects.find(project => getProjectSlug(project.name) === slug) || null
-  );
+export async function getProjectBySlug(slug: string): Promise<CommercialProject | null> {
+  const projects = await getAllCommercialProjects();
+  return projects.find(
+    (p) => getProjectSlug(p.name) === slug
+  ) || null;
 } 
