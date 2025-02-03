@@ -38,6 +38,7 @@ export interface ApiResponse {
   page: number;
   projects: Project[];
   total: number;
+  has_more: boolean;
 }
 
 export interface CommercialApiResponse {

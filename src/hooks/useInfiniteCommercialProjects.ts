@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { CommercialProject } from '@/types/project';
 
 interface CommercialApiResponse {
@@ -39,24 +39,16 @@ export function useInfiniteCommercialProjects(limit: number = 6) {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   
-  // Cache the results
-  const cache = useRef<Map<number, CommercialProject[]>>(new Map());
-
   const loadProjects = useCallback(async () => {
     if (loading || !hasMore) return;
-    
+    //`https://test-vision-api-389008.el.r.appspot.com/commercial_projects?page=${page}&limit=${limit}&offset=${offset}`
     try {
       setLoading(true);
       setError(null);
 
-      if (cache.current.has(page)) {
-        setProjects(prev => [...prev, ...cache.current.get(page)!]);
-        setLoading(false);
-        return;
-      }
-
+      const offset = (page - 1) * limit;
       const response = await fetch(
-        `https://test-vision-api-389008.el.r.appspot.com/commercial_projects?page=${page}&limit=${limit}`
+        `http://192.168.29.3:8081/commercial_projects?page=${page}&limit=${limit}&offset=${offset}`
       );
       
       if (!response.ok) {
@@ -93,13 +85,14 @@ export function useInfiniteCommercialProjects(limit: number = 6) {
         projectStatus: project.projectStatus,
       }));
 
-      cache.current.set(page, formattedProjects);
-      
       setProjects(prev => {
-        const newProjects = [...prev, ...formattedProjects];
-        setHasMore(data.has_more);
-        return newProjects;
+        // Only add new projects
+        const currentProjectNames = new Set(prev.map(p => p.name));
+        const newProjects = formattedProjects.filter(p => !currentProjectNames.has(p.name));
+        return [...prev, ...newProjects];
       });
+      
+      setHasMore(data.has_more);
       
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -114,9 +107,10 @@ export function useInfiniteCommercialProjects(limit: number = 6) {
     }
   }, [loading, hasMore]);
 
+  // Only run effect when page changes
   useEffect(() => {
     loadProjects();
-  }, [page, loadProjects]);
+  }, [page]); // Remove loadProjects from dependency array
 
   return { projects, loading, error, hasMore, loadMore };
 } 

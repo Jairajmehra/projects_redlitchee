@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { Project, ApiResponse } from '@/types/project';
 
 export function useInfiniteProjects(limit: number = 6) {
@@ -7,9 +7,6 @@ export function useInfiniteProjects(limit: number = 6) {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
-  
-  // Cache the results
-  const cache = useRef<Map<number, Project[]>>(new Map());
 
   const loadProjects = useCallback(async () => {
     if (loading || !hasMore) return;
@@ -18,14 +15,9 @@ export function useInfiniteProjects(limit: number = 6) {
       setLoading(true);
       setError(null);
 
-      if (cache.current.has(page)) {
-        setProjects(prev => [...prev, ...cache.current.get(page)!]);
-        setLoading(false);
-        return;
-      }
-
+      const offset = (page - 1) * limit;
       const response = await fetch(
-        `https://test-vision-api-389008.el.r.appspot.com/projects?page=${page}&limit=${limit}`
+        `https://test-vision-api-389008.el.r.appspot.com/projects?page=${page}&limit=${limit}&offset=${offset}`
       );
       
       if (!response.ok) {
@@ -34,13 +26,14 @@ export function useInfiniteProjects(limit: number = 6) {
 
       const data: ApiResponse = await response.json();
       
-      cache.current.set(page, data.projects);
-      
       setProjects(prev => {
-        const newProjects = [...prev, ...data.projects];
-        setHasMore(newProjects.length < data.total);
-        return newProjects;
+        // Only add new projects
+        const currentProjectNames = new Set(prev.map(p => p.name));
+        const newProjects = data.projects.filter(p => !currentProjectNames.has(p.name));
+        return [...prev, ...newProjects];
       });
+      
+      setHasMore(data.has_more);
       
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -55,9 +48,10 @@ export function useInfiniteProjects(limit: number = 6) {
     }
   }, [loading, hasMore]);
 
+  // Only run effect when page changes
   useEffect(() => {
     loadProjects();
-  }, [page, loadProjects]);
+  }, [page]); // Remove loadProjects from dependency array
 
   return { projects, loading, error, hasMore, loadMore };
 } 
