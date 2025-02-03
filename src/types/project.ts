@@ -66,8 +66,17 @@ export interface CommercialApiResponse {
     promoterName: string;
     totalOpenArea: string;
     totalCoveredArea: string;
-    totalAvailableUnits: string;
+    totalUnitsAvailable: string;
+    projectAddress: string;
+    email: string;
+    extendedEndDate: string;
+    originalEndDate: string;
+    promoterAddress: string;
+    promoterPhone: string;
+    startDate: string;
+    type: string;
   }>;
   total: number;
   has_more: boolean;
+  status: string;
 } 

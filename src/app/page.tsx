@@ -1,110 +1,69 @@
 'use client';
 
-import { useRef, useCallback, useState } from 'react';
-import PropertyCard from "@/components/PropertyCard";
-import CommercialPropertyCard from "@/components/CommercialPropertyCard";
-import PropertyTypeSwitch from "@/components/PropertyTypeSwitch";
-import { useInfiniteProjects } from '@/hooks/useInfiniteProjects';
-import { useInfiniteCommercialProjects } from '@/hooks/useInfiniteCommercialProjects';
+import Link from 'next/link';
 
-export default function Home() {
-  const [propertyType, setPropertyType] = useState<'residential' | 'commercial'>('residential');
-  
-  // Residential projects hook
-  const { 
-    projects: residentialProjects, 
-    loading: residentialLoading, 
-    error: residentialError, 
-    hasMore: hasMoreResidential, 
-    loadMore: loadMoreResidential 
-  } = useInfiniteProjects(6);
-
-  // Commercial projects hook
-  const { 
-    projects: commercialProjects, 
-    loading: commercialLoading, 
-    error: commercialError, 
-    hasMore: hasMoreCommercial, 
-    loadMore: loadMoreCommercial 
-  } = useInfiniteCommercialProjects(6);
-  
-  const observer = useRef<IntersectionObserver | null>(null);
-  
-  const lastCardRef = useCallback((node: HTMLDivElement | null) => {
-    if ((propertyType === 'residential' && residentialLoading) || 
-        (propertyType === 'commercial' && commercialLoading)) return;
-    
-    if (observer.current) observer.current.disconnect();
-    
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting) {
-        if (propertyType === 'residential' && hasMoreResidential) {
-          loadMoreResidential();
-        } else if (propertyType === 'commercial' && hasMoreCommercial) {
-          loadMoreCommercial();
-        }
-      }
-    });
-    
-    if (node) observer.current.observe(node);
-  }, [
-    propertyType, 
-    residentialLoading, 
-    commercialLoading, 
-    hasMoreResidential, 
-    hasMoreCommercial, 
-    loadMoreResidential, 
-    loadMoreCommercial
-  ]);
-
+export default function LandingPage() {
   return (
-    <div className="min-h-screen p-8">
-      <header className="mb-12 flex flex-col md:flex-row items-center gap-4 md:justify-between">
-        <h1 className="text-2xl font-bold">Redlitchee Realties</h1>
-        <PropertyTypeSwitch onSwitch={setPropertyType} />
-      </header>
-
-      <main>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-          {propertyType === 'residential' ? (
-            // Residential Projects
-            residentialProjects.map((project, index) => (
-              <div
-                key={index}
-                ref={index === residentialProjects.length - 1 ? lastCardRef : undefined}
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <div className="relative px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl pt-20 pb-32">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+              Redlitchee Realties
+            </h1>
+            <p className="mt-6 text-lg leading-8 text-gray-600">
+              Discover RERA registered residential and commercial properties across Gujarat. 
+              Browse through our comprehensive collection of real estate projects.
+            </p>
+            <div className="mt-10 flex items-center justify-center gap-x-6">
+              <Link
+                href="/residential"
+                className="rounded-full bg-[#E55C5C] px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-[#d45151] transition-colors"
               >
-                <PropertyCard {...project} />
-              </div>
-            ))
-          ) : (
-            // Commercial Projects
-            commercialProjects.map((project, index) => (
-              <div
-                key={index}
-                ref={index === commercialProjects.length - 1 ? lastCardRef : undefined}
+                Residential Projects
+              </Link>
+              <Link
+                href="/commercial"
+                className="rounded-full bg-[#E55C5C] px-8 py-3 text-lg font-semibold text-white shadow-sm hover:bg-[#d45151] transition-colors"
               >
-                <CommercialPropertyCard {...project} />
-              </div>
-            ))
-          )}
+                Commercial Projects
+              </Link>
+            </div>
+          </div>
         </div>
-        
-        {/* Loading State */}
-        {((propertyType === 'residential' && residentialLoading) ||
-          (propertyType === 'commercial' && commercialLoading)) && (
-          <div className="text-center mt-8">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+      </div>
+
+      {/* Features Section */}
+      <div className="bg-gray-50 py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Feature 1 */}
+            <div className="relative p-6 bg-white rounded-2xl shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900">RERA Registered</h3>
+              <p className="mt-2 text-gray-600">
+                All listed properties are RERA registered, ensuring compliance and security for your investment.
+              </p>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="relative p-6 bg-white rounded-2xl shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900">Comprehensive Information</h3>
+              <p className="mt-2 text-gray-600">
+                Detailed project information, brochures, and specifications available for all properties.
+              </p>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="relative p-6 bg-white rounded-2xl shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900">Wide Coverage</h3>
+              <p className="mt-2 text-gray-600">
+                Properties across Ahmedabad, Surat, Vadodara, and other major cities in Gujarat.
+              </p>
+            </div>
           </div>
-        )}
-        
-        {/* Error State */}
-        {((propertyType === 'residential' && residentialError) ||
-          (propertyType === 'commercial' && commercialError)) && (
-          <div className="text-red-500 text-center mt-8">
-            Error: {propertyType === 'residential' ? residentialError : commercialError}
-          </div>
-        )}
-      </main>
+        </div>
+      </div>
     </div>
   );
 }
