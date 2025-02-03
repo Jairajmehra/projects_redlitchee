@@ -41,14 +41,13 @@ export function useInfiniteCommercialProjects(limit: number = 6) {
   
   const loadProjects = useCallback(async () => {
     if (loading || !hasMore) return;
-    //`https://test-vision-api-389008.el.r.appspot.com/commercial_projects?page=${page}&limit=${limit}&offset=${offset}`
     try {
       setLoading(true);
       setError(null);
 
       const offset = (page - 1) * limit;
       const response = await fetch(
-        `http://192.168.29.3:8081/commercial_projects?page=${page}&limit=${limit}&offset=${offset}`
+        `https://test-vision-api-389008.el.r.appspot.com/commercial_projects?page=${page}&limit=${limit}&offset=${offset}`
       );
       
       if (!response.ok) {
