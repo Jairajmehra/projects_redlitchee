@@ -8,14 +8,42 @@ export function useCommercialSearch(debounceMs: number = 300) {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
-  
-  // Keep track of the last query to prevent unnecessary resets
+  const [totalSearchResults, setTotalSearchResults] = useState(0);
   const lastQuery = useRef(query);
+
+  const formatProject = (project: CommercialApiResponse['projects'][0]): CommercialProject => ({
+    name: project.name,
+    sizes: project.averageCarpetArea,
+    possession: new Date(project.endDate).toLocaleDateString('en-US', { 
+      month: 'long',
+      year: 'numeric'
+    }),
+    description: project.projectAddress,
+    brochureLink: project.brochureLink,
+    about: project.aboutProject,
+    coverImage: project.coverPhotoLink,
+    rera: project.rera,
+    planPassingAuthority: project.planPassingAuthority,
+    certificateLink: project.certificateLink,
+    mobile: project.mobile,
+    district: project.district,
+    promoterName: project.promoterName,
+    projectType: project.projectType,
+    approvedDate: project.approvedDate,
+    projectLandArea: project.projectLandArea.toString(),
+    totalOpenArea: project.totalOpenArea.toString(),
+    totalCoveredArea: project.totalCoveredArea.toString(),
+    totalUnits: project.totalUnits.toString(),
+    totalUnitsAvailable: project.totalUnitsAvailable.toString(),
+    numberOfTowers: project.numberOfTowers.toString(),
+    projectStatus: project.projectStatus,
+  });
 
   const searchProjects = useCallback(async () => {
     if (!query.trim()) {
       setSearchResults([]);
       setHasMore(false);
+      setTotalSearchResults(0);
       return;
     }
 
@@ -23,8 +51,9 @@ export function useCommercialSearch(debounceMs: number = 300) {
       setLoading(true);
       setError(null);
 
+      const offset = (page - 1) * 6; // Using fixed limit of 6 to match the UI
       const response = await fetch(
-        `https://test-vision-api-389008.el.r.appspot.com/search_commercial_projects?q=${encodeURIComponent(query)}&page=${page}&limit=6`
+        `https://test-vision-api-389008.el.r.appspot.com/search_commercial_projects?q=${encodeURIComponent(query)}&page=${page}&offset=${offset}&limit=6`
       );
 
       if (!response.ok) {
@@ -32,48 +61,19 @@ export function useCommercialSearch(debounceMs: number = 300) {
       }
 
       const data: CommercialApiResponse = await response.json();
+      const formattedProjects = data.projects.map(formatProject);
       
-      const formattedProjects: CommercialProject[] = data.projects.map(project => ({
-        name: project.name,
-        sizes: project.averageCarpetArea,
-        possession: new Date(project.endDate).toLocaleDateString('en-US', { 
-          month: 'long',
-          year: 'numeric'
-        }),
-        description: project.projectAddress,
-        brochureLink: project.brochureLink,
-        about: project.aboutProject,
-        coverImage: project.coverPhotoLink,
-        rera: project.rera,
-        planPassingAuthority: project.planPassingAuthority,
-        certificateLink: project.certificateLink,
-        mobile: project.mobile,
-        district: project.district,
-        promoterName: project.promoterName,
-        projectType: project.projectType,
-        approvedDate: project.approvedDate,
-        projectLandArea: project.projectLandArea.toString(),
-        totalOpenArea: project.totalOpenArea.toString(),
-        totalCoveredArea: project.totalCoveredArea.toString(),
-        totalUnits: project.totalUnits.toString(),
-        totalUnitsAvailable: project.totalUnitsAvailable.toString(),
-        numberOfTowers: project.numberOfTowers.toString(),
-        projectStatus: project.projectStatus,
-      }));
-
-      setSearchResults(prev => {
-        // If query changed, replace results
-        if (lastQuery.current !== query) {
-          lastQuery.current = query;
-          return formattedProjects;
-        }
-        // Otherwise, append new results
-        const currentProjectNames = new Set(prev.map(p => p.name));
-        const newProjects = formattedProjects.filter(p => !currentProjectNames.has(p.name));
-        return [...prev, ...newProjects];
-      });
+      // If query changed or it's first page, replace results
+      // Otherwise, append new results for pagination
+      if (lastQuery.current !== query) {
+        lastQuery.current = query;
+        setSearchResults(formattedProjects);
+      } else {
+        setSearchResults(prev => page === 1 ? formattedProjects : [...prev, ...formattedProjects]);
+      }
       
       setHasMore(data.has_more);
+      setTotalSearchResults(data.total);
 
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -82,18 +82,18 @@ export function useCommercialSearch(debounceMs: number = 300) {
     }
   }, [query, page]);
 
-  // Debounced search effect
+  // Handle new search
   useEffect(() => {
     if (!query.trim()) {
       setSearchResults([]);
       setHasMore(false);
+      setTotalSearchResults(0);
       return;
     }
 
-    // Only reset page if query actually changed
     if (lastQuery.current !== query) {
       const handler = setTimeout(() => {
-        setPage(1);
+        setPage(1); // Reset to first page for new search
         searchProjects();
       }, debounceMs);
 
@@ -101,7 +101,7 @@ export function useCommercialSearch(debounceMs: number = 300) {
     }
   }, [query, debounceMs, searchProjects]);
 
-  // Load more effect
+  // Handle pagination
   useEffect(() => {
     if (page > 1 && query.trim() && lastQuery.current === query) {
       searchProjects();
@@ -121,6 +121,7 @@ export function useCommercialSearch(debounceMs: number = 300) {
     loading,
     error,
     hasMore,
-    loadMore
+    loadMore,
+    totalSearchResults
   };
 } 

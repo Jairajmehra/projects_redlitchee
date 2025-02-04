@@ -12,7 +12,8 @@ export default function CommercialPage() {
     loading: loadingAll, 
     error: errorAll, 
     hasMore: hasMoreAll, 
-    loadMore: loadMoreAll 
+    loadMore: loadMoreAll,
+    totalProjectCount 
   } = useInfiniteCommercialProjects(6);
 
   const {
@@ -22,7 +23,8 @@ export default function CommercialPage() {
     loading: loadingSearch,
     error: errorSearch,
     hasMore: hasMoreSearch,
-    loadMore: loadMoreSearch
+    loadMore: loadMoreSearch,
+    totalSearchResults
   } = useCommercialSearch(300);
   
   const observer = useRef<IntersectionObserver | null>(null);
@@ -34,10 +36,11 @@ export default function CommercialPage() {
     
     observer.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) {
-        if (query.trim()) {
-          hasMoreSearch && loadMoreSearch();
-        } else {
-          hasMoreAll && loadMoreAll();
+        const isSearching = query.trim().length > 0;
+        if (isSearching && hasMoreSearch) {
+          loadMoreSearch();
+        } else if (!isSearching && hasMoreAll) {
+          loadMoreAll();
         }
       }
     });
@@ -45,24 +48,63 @@ export default function CommercialPage() {
     if (node) observer.current.observe(node);
   }, [loadingAll, loadingSearch, query, hasMoreAll, hasMoreSearch, loadMoreAll, loadMoreSearch]);
 
-  const projects = query.trim() ? searchResults : allProjects;
-  const loading = loadingAll || loadingSearch;
-  const error = errorAll || errorSearch;
+  const isSearching = query.trim().length > 0;
+  const projects = isSearching ? searchResults : allProjects;
+  const loading = isSearching ? loadingSearch : loadingAll;
+  const error = isSearching ? errorSearch : errorAll;
 
   return (
-    <div className="min-h-screen p-8">
-      <header className="mb-12 flex flex-col md:flex-row items-center gap-4 md:justify-between">
-        <Link href="/" className="text-2xl font-bold hover:text-[#E55C5C] transition-colors">
-          Redlitchee Realties
-        </Link>
-        <div className="flex flex-col items-center w-full md:w-auto gap-4">
-          <h2 className="text-xl text-gray-600">Commercial Projects</h2>
-          <div className="relative w-full max-w-xl">
+    <div className="min-h-screen">
+      {/* Navigation Bar */}
+      <nav className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16 items-center">
+            <Link href="/" className="text-2xl font-bold">
+              Redlitchee Realties
+            </Link>
+            <div className="flex gap-6">
+              <Link 
+                href="/" 
+                className="text-gray-600 hover:text-[#E55C5C] transition-colors"
+              >
+                Home
+              </Link>
+              <Link 
+                href="/commercial" 
+                className="text-[#E55C5C]"
+              >
+                Commercial
+              </Link>
+              <Link 
+                href="/residential" 
+                className="text-gray-600 hover:text-[#E55C5C] transition-colors"
+              >
+                Residential
+              </Link>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Project Count and Search */}
+        <div className="mb-8 space-y-4">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-2xl font-semibold">
+              {totalProjectCount} Commercial Projects
+            </h1>
+            {isSearching && !loadingSearch && (
+              <p className="text-gray-600">
+                Found {totalSearchResults} matching results
+              </p>
+            )}
+          </div>
+          <div className="max-w-xl relative">
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search projects..."
+              placeholder="Search commercial projects by name"
               className="w-full px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#E55C5C] focus:border-transparent"
             />
             {loadingSearch && (
@@ -72,13 +114,12 @@ export default function CommercialPage() {
             )}
           </div>
         </div>
-      </header>
 
-      <main>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        {/* Project Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project, index) => (
             <div
-              key={project.name}
+              key={project.rera}
               ref={index === projects.length - 1 ? lastCardRef : undefined}
             >
               <CommercialPropertyCard {...project} />
@@ -101,7 +142,7 @@ export default function CommercialPage() {
         )}
 
         {/* No Results State */}
-        {query.trim() && !loading && searchResults.length === 0 && (
+        {isSearching && !loading && searchResults.length === 0 && (
           <div className="text-center mt-8 text-gray-600">
             No projects found matching "{query}"
           </div>
