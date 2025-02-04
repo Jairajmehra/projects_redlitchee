@@ -29,7 +29,7 @@ export interface CommercialProject {
   totalCoveredArea: string;
   projectStatus: string;
   totalUnits: string;
-  totalAvailableUnits: string;
+  totalUnitsAvailable: string;
   numberOfTowers: string;
 }
 

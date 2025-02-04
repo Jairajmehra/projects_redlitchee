@@ -173,7 +173,7 @@ export default async function CommercialProjectPage({ params }: PageProps) {
             {/* Total Available Units */}
             <div className="bg-gray-100 rounded-lg p-4 shadow-sm">
               <p className="text-gray-500 text-sm">Total Available Units</p>
-              <p className="font-medium">{project.totalAvailableUnits}</p>
+              <p className="font-medium">{project.totalUnitsAvailable}</p>
             </div>
 
             {/* Plan Passing Authority */}

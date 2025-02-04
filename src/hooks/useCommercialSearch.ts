@@ -24,7 +24,7 @@ export function useCommercialSearch(debounceMs: number = 300) {
       setError(null);
 
       const response = await fetch(
-        `http://192.168.29.3:8085/search_commercial_projects?q=${encodeURIComponent(query)}&page=${page}&limit=6`
+        `https://test-vision-api-389008.el.r.appspot.com/search_commercial_projects?q=${encodeURIComponent(query)}&page=${page}&limit=6`
       );
 
       if (!response.ok) {
@@ -56,7 +56,7 @@ export function useCommercialSearch(debounceMs: number = 300) {
         totalOpenArea: project.totalOpenArea.toString(),
         totalCoveredArea: project.totalCoveredArea.toString(),
         totalUnits: project.totalUnits.toString(),
-        totalAvailableUnits: project.totalUnitsAvailable.toString(),
+        totalUnitsAvailable: project.totalUnitsAvailable.toString(),
         numberOfTowers: project.numberOfTowers.toString(),
         projectStatus: project.projectStatus,
       }));

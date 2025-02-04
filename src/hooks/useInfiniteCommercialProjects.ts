@@ -24,7 +24,7 @@ interface CommercialApiResponse {
     totalOpenArea: string;
     totalCoveredArea: string;
     totalUnits: string;
-    totalAvailableUnits: string;
+    totalUnitsAvailable: string;
     numberOfTowers: string;
     projectStatus: string;
   }>;
@@ -79,7 +79,7 @@ export function useInfiniteCommercialProjects(limit: number = 6) {
         totalOpenArea: project.totalOpenArea,
         totalCoveredArea: project.totalCoveredArea,
         totalUnits: project.totalUnits,
-        totalAvailableUnits: project.totalAvailableUnits,
+        totalUnitsAvailable: project.totalUnitsAvailable,
         numberOfTowers: project.numberOfTowers,
         projectStatus: project.projectStatus,
       }));
