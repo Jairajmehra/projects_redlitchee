@@ -1,10 +1,16 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Navbar from '@/components/Navbar';
 
 export default function LandingPage() {
+  const pathname = usePathname();
+
   return (
     <div className="min-h-screen bg-white">
+      <Navbar currentPath={pathname} />
+
       {/* Hero Section */}
       <div className="relative px-6 lg:px-8">
         <div className="mx-auto max-w-3xl pt-20 pb-32">

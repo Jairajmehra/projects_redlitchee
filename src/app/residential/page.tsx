@@ -1,12 +1,14 @@
 'use client';
 
 import { useRef, useCallback } from 'react';
-import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import PropertyCard from "@/components/PropertyCard";
+import Navbar from "@/components/Navbar";
 import { useInfiniteProjects } from '@/hooks/useInfiniteProjects';
 import { useResidentialSearch } from '@/hooks/useResidentialSearch';
 
 export default function ResidentialPage() {
+  const pathname = usePathname();
   const { 
     projects: allProjects, 
     loading: loadingAll, 
@@ -55,36 +57,7 @@ export default function ResidentialPage() {
 
   return (
     <div className="min-h-screen">
-      {/* Navigation Bar */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <Link href="/" className="text-2xl font-bold">
-              Redlitchee Realties
-            </Link>
-            <div className="flex gap-6">
-              <Link 
-                href="/" 
-                className="text-gray-600 hover:text-[#E55C5C] transition-colors"
-              >
-                Home
-              </Link>
-              <Link 
-                href="/commercial" 
-                className="text-gray-600 hover:text-[#E55C5C] transition-colors"
-              >
-                Commercial
-              </Link>
-              <Link 
-                href="/residential" 
-                className="text-[#E55C5C]"
-              >
-                Residential
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar currentPath={pathname} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Project Count and Search */}
