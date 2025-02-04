@@ -7,40 +7,69 @@ export function useInfiniteProjects(limit: number = 6) {
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
+  const [totalProjectCount, setTotalProjectCount] = useState(0);
+
+  const formatProject = (project: ApiResponse['projects'][0]): Project => ({
+    name: project.name,
+    locality: project.locality,
+    propertyType: project.propertyType,
+    unitSizes: project.unitSizes,
+    bhk: project.bhk,
+    brochureLink: project.brochureLink,
+    rera: project.rera
+  });
+
+  const fetchProjects = useCallback(async (pageNum: number) => {
+    const offset = (pageNum - 1) * limit;
+    const response = await fetch(
+      `https://test-vision-api-389008.el.r.appspot.com/projects?page=${pageNum}&offset=${offset}&limit=${limit}`
+    );
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch residential projects');
+    }
+
+    return response.json();
+  }, [limit]);
+
+  // Initial load to get total count
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const data = await fetchProjects(1);
+        setTotalProjectCount(data.total);
+        setProjects(data.projects.map(formatProject));
+        setHasMore(data.has_more);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      }
+    };
+
+    fetchInitialData();
+  }, [fetchProjects]);
 
   const loadProjects = useCallback(async () => {
-    if (loading || !hasMore) return;
+    if (loading || page === 1) return; // Skip if it's the first page (already loaded)
     
     try {
       setLoading(true);
       setError(null);
 
-      const offset = (page - 1) * limit;
-      const response = await fetch(
-        `https://test-vision-api-389008.el.r.appspot.com/projects?page=${page}&limit=${limit}&offset=${offset}`
-      );
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch projects');
-      }
+      const data = await fetchProjects(page);
+      const formattedProjects = data.projects.map(formatProject);
 
-      const data: ApiResponse = await response.json();
-      
-      setProjects(prev => {
-        // Only add new projects
-        const currentProjectNames = new Set(prev.map(p => p.name));
-        const newProjects = data.projects.filter(p => !currentProjectNames.has(p.name));
-        return [...prev, ...newProjects];
-      });
-      
+      setProjects(prev => [...prev, ...formattedProjects]);
       setHasMore(data.has_more);
-      
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
-  }, [page, limit, loading, hasMore]);
+  }, [page, loading, fetchProjects]);
+
+  useEffect(() => {
+    loadProjects();
+  }, [page]);
 
   const loadMore = useCallback(() => {
     if (!loading && hasMore) {
@@ -48,10 +77,5 @@ export function useInfiniteProjects(limit: number = 6) {
     }
   }, [loading, hasMore]);
 
-  // Only run effect when page changes
-  useEffect(() => {
-    loadProjects();
-  }, [page]); // Remove loadProjects from dependency array
-
-  return { projects, loading, error, hasMore, loadMore };
+  return { projects, loading, error, hasMore, loadMore, totalProjectCount };
 } 

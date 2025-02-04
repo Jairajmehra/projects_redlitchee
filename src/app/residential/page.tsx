@@ -12,7 +12,8 @@ export default function ResidentialPage() {
     loading: loadingAll, 
     error: errorAll, 
     hasMore: hasMoreAll, 
-    loadMore: loadMoreAll 
+    loadMore: loadMoreAll,
+    totalProjectCount 
   } = useInfiniteProjects(6);
 
   const {
@@ -22,7 +23,8 @@ export default function ResidentialPage() {
     loading: loadingSearch,
     error: errorSearch,
     hasMore: hasMoreSearch,
-    loadMore: loadMoreSearch
+    loadMore: loadMoreSearch,
+    totalSearchResults
   } = useResidentialSearch(300);
   
   const observer = useRef<IntersectionObserver | null>(null);
@@ -34,10 +36,11 @@ export default function ResidentialPage() {
     
     observer.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) {
-        if (query.trim()) {
-          hasMoreSearch && loadMoreSearch();
-        } else {
-          hasMoreAll && loadMoreAll();
+        const isSearching = query.trim().length > 0;
+        if (isSearching && hasMoreSearch) {
+          loadMoreSearch();
+        } else if (!isSearching && hasMoreAll) {
+          loadMoreAll();
         }
       }
     });
@@ -45,9 +48,10 @@ export default function ResidentialPage() {
     if (node) observer.current.observe(node);
   }, [loadingAll, loadingSearch, query, hasMoreAll, hasMoreSearch, loadMoreAll, loadMoreSearch]);
 
-  const projects = query.trim() ? searchResults : allProjects;
-  const loading = loadingAll || loadingSearch;
-  const error = errorAll || errorSearch;
+  const isSearching = query.trim().length > 0;
+  const projects = isSearching ? searchResults : allProjects;
+  const loading = isSearching ? loadingSearch : loadingAll;
+  const error = isSearching ? errorSearch : errorAll;
 
   return (
     <div className="min-h-screen">
@@ -85,9 +89,16 @@ export default function ResidentialPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Project Count and Search */}
         <div className="mb-8 space-y-4">
-          <h1 className="text-2xl font-semibold">
-            {projects.length} Residential Projects
-          </h1>
+          <div className="flex flex-col gap-2">
+            <h1 className="text-2xl font-semibold">
+              {totalProjectCount} Residential Projects
+            </h1>
+            {isSearching && !loadingSearch && (
+              <p className="text-gray-600">
+                Found {totalSearchResults} matching results
+              </p>
+            )}
+          </div>
           <div className="max-w-xl relative">
             <input
               type="search"
@@ -108,7 +119,7 @@ export default function ResidentialPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project, index) => (
             <div
-              key={project.name}
+              key={project.rera}
               ref={index === projects.length - 1 ? lastCardRef : undefined}
             >
               <PropertyCard {...project} />
@@ -131,7 +142,7 @@ export default function ResidentialPage() {
         )}
 
         {/* No Results State */}
-        {query.trim() && !loading && searchResults.length === 0 && (
+        {isSearching && !loading && searchResults.length === 0 && (
           <div className="text-center mt-8 text-gray-600">
             No projects found matching "{query}"
           </div>
