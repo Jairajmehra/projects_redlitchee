@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+#repomix
+repomix-output.txt
+
 # debug
 npm-debug.log*
 yarn-debug.log*
