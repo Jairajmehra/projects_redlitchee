@@ -1,11 +1,38 @@
-export interface Project {
+export interface ResidentialProject {
   name: string;
   locality: string;
   propertyType: string;
   unitSizes: string;
-  bhk: string;
+  bhk: string[];
   brochureLink: string;
   rera: string;
+  certificateLink: string;
+  configuration: {
+    isStale: boolean;
+    state: string;
+    value: string;
+  };
+  coordinates: string;
+  coverPhotoLink: string;
+  endDate: string;
+  localityNames: string[];
+  mobile: string;
+  numberOfTowers: number;
+  photos: string;
+  planPassingAuthority: string;
+  price: {
+    isStale: boolean;
+    state: string;
+    value: string;
+  };
+  projectAddress: string;
+  projectLandArea: number;
+  projectStatus: string;
+  projectType: string[];
+  promoterName: string;
+  startDate: string;
+  totalUnits: number;
+  totalUnitsAvailable: number;
 }
 
 export interface CommercialProject {
@@ -31,14 +58,49 @@ export interface CommercialProject {
   totalUnits: string;
   totalUnitsAvailable: string;
   numberOfTowers: string;
+  coordinates?: string; // Format: "latitude,longitude"
 }
 
-export interface ApiResponse {
+export interface ResidentialApiResponse {
   limit: number;
   page: number;
-  projects: Project[];
+  offset: number;
+  projects: Array<{
+    name: string;
+    bhk: string[];
+    brochureLink: string;
+    certificateLink: string;
+    configuration: {
+      isStale: boolean;
+      state: string;
+      value: string;
+    };
+    coordinates: string;
+    coverPhotoLink: string;
+    endDate: string;
+    localityNames: string[];
+    mobile: string;
+    numberOfTowers: number;
+    photos: string;
+    planPassingAuthority: string;
+    price: {
+      isStale: boolean;
+      state: string;
+      value: string;
+    };
+    projectAddress: string;
+    projectLandArea: number;
+    projectStatus: string;
+    projectType: string[];
+    promoterName: string;
+    rera: string;
+    startDate: string;
+    totalUnits: number;
+    totalUnitsAvailable: number;
+  }>;
   total: number;
   has_more: boolean;
+  status: string;
 }
 
 export interface CommercialApiResponse {
@@ -75,6 +137,7 @@ export interface CommercialApiResponse {
     promoterPhone: string;
     startDate: string;
     type: string;
+    Coordinates: string;
   }>;
   total: number;
   has_more: boolean;

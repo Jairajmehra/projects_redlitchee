@@ -6,9 +6,19 @@ import CommercialPropertyCard from "@/components/CommercialPropertyCard";
 import Navbar from "@/components/Navbar";
 import { useInfiniteCommercialProjects } from '@/hooks/useInfiniteCommercialProjects';
 import { useCommercialSearch } from '@/hooks/useCommercialSearch';
+import { useUserLocation } from '@/hooks/useUserLocation';
+import GoogleMap from '@/components/GoogleMap';
+import { useCommercialMapMarkers } from '@/hooks/useCommercialMapMarkers';
+
+// Ahmedabad coordinates
+const AHMEDABAD_CENTER = {
+  lat: 23.0225,
+  lng: 72.5714
+};
 
 export default function CommercialPage() {
   const pathname = usePathname();
+  const { markers } = useCommercialMapMarkers();
   const { 
     projects: allProjects, 
     loading: loadingAll, 
@@ -54,6 +64,8 @@ export default function CommercialPage() {
   const projects = isSearching ? searchResults : allProjects;
   const loading = isSearching ? loadingSearch : loadingAll;
   const error = isSearching ? errorSearch : errorAll;
+
+  const { location } = useUserLocation(AHMEDABAD_CENTER);
 
   return (
     <div className="min-h-screen">
@@ -120,6 +132,12 @@ export default function CommercialPage() {
             No projects found matching "{query}"
           </div>
         )}
+
+        <GoogleMap
+          center={location || AHMEDABAD_CENTER}
+          zoom={location ? 15 : 12}
+          markers={markers}
+        />
       </main>
     </div>
   );

@@ -2,9 +2,9 @@
 
 import { useRef, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
-import PropertyCard from "@/components/PropertyCard";
+import ResidentialPropertyCard from "@/components/ResidentialPropertyCard";
 import Navbar from "@/components/Navbar";
-import { useInfiniteProjects } from '@/hooks/useInfiniteProjects';
+import { useInfiniteResidentialProjects } from '@/hooks/useInfiniteResidentialProjects';
 import { useResidentialSearch } from '@/hooks/useResidentialSearch';
 
 export default function ResidentialPage() {
@@ -16,7 +16,7 @@ export default function ResidentialPage() {
     hasMore: hasMoreAll, 
     loadMore: loadMoreAll,
     totalProjectCount 
-  } = useInfiniteProjects(6);
+  } = useInfiniteResidentialProjects(6);
 
   const {
     query,
@@ -95,7 +95,7 @@ export default function ResidentialPage() {
               key={project.rera}
               ref={index === projects.length - 1 ? lastCardRef : undefined}
             >
-              <PropertyCard {...project} />
+              <ResidentialPropertyCard {...project} />
             </div>
           ))}
         </div>

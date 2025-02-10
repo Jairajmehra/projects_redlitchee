@@ -35,6 +35,7 @@ export function useInfiniteCommercialProjects(limit: number = 6) {
     totalUnitsAvailable: project.totalUnitsAvailable,
     numberOfTowers: project.numberOfTowers,
     projectStatus: project.projectStatus,
+    coordinates: project.Coordinates,
   });
 
   const fetchProjects = useCallback(async (pageNum: number) => {

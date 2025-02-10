@@ -1,22 +1,41 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Project, ApiResponse } from '@/types/project';
+import type { ResidentialProject, ResidentialApiResponse } from '@/types/project';
 
-export function useInfiniteProjects(limit: number = 6) {
-  const [projects, setProjects] = useState<Project[]>([]);
+export function useInfiniteResidentialProjects(limit: number = 6) {
+  const [projects, setProjects] = useState<ResidentialProject[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [totalProjectCount, setTotalProjectCount] = useState(0);
 
-  const formatProject = (project: ApiResponse['projects'][0]): Project => ({
+  const formatProject = (project: ResidentialApiResponse['projects'][0]): ResidentialProject => ({
     name: project.name,
-    locality: project.locality,
-    propertyType: project.propertyType,
-    unitSizes: project.unitSizes,
-    bhk: project.bhk,
+    locality: Array.isArray(project.localityNames) ? project.localityNames.join(', ') : '',
+    propertyType: project.projectType[0] || '',
+    unitSizes: project.configuration.value,
+    bhk: Array.isArray(project.bhk) ? project.bhk : [],
     brochureLink: project.brochureLink,
-    rera: project.rera
+    rera: project.rera,
+    certificateLink: project.certificateLink,
+    configuration: project.configuration,
+    coordinates: project.coordinates,
+    coverPhotoLink: project.coverPhotoLink,
+    endDate: project.endDate,
+    localityNames: project.localityNames,
+    mobile: project.mobile,
+    numberOfTowers: project.numberOfTowers,
+    photos: project.photos,
+    planPassingAuthority: project.planPassingAuthority,
+    price: project.price,
+    projectAddress: project.projectAddress,
+    projectLandArea: project.projectLandArea,
+    projectStatus: project.projectStatus,
+    projectType: Array.isArray(project.projectType) ? project.projectType : [],
+    promoterName: project.promoterName,
+    startDate: project.startDate,
+    totalUnits: project.totalUnits,
+    totalUnitsAvailable: project.totalUnitsAvailable
   });
 
   const fetchProjects = useCallback(async (pageNum: number) => {
