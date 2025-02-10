@@ -71,7 +71,7 @@ export default function CommercialPage() {
     <div className="min-h-screen">
       <Navbar currentPath={pathname} />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12 py-8">
         {/* Project Count and Search */}
         <div className="mb-8 space-y-4">
           <div className="flex flex-col gap-2">
@@ -101,11 +101,12 @@ export default function CommercialPage() {
         </div>
 
         {/* Project Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
           {projects.map((project, index) => (
             <div
               key={project.rera}
               ref={index === projects.length - 1 ? lastCardRef : undefined}
+              className="flex justify-center md:justify-start"
             >
               <CommercialPropertyCard {...project} />
             </div>

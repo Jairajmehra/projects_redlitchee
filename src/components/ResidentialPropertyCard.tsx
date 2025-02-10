@@ -4,6 +4,33 @@ import { useState } from 'react';
 import Image from 'next/image';
 import type { ResidentialProject } from '@/types/project';
 
+// Subcomponent for configuration tags (BHK)
+function ConfigurationTag({ text }: { text: string }) {
+  return (
+    <div className="flex justify-center items-center px-2 py-1 gap-1 rounded bg-[#70BCE4] text-black text-base font-medium font-sf-pro">
+      {text}
+    </div>
+  );
+}
+
+// Subcomponent for project type tags
+function ProjectTypeTag({ text }: { text: string }) {
+  return (
+    <div className="flex justify-center items-center px-2 py-1 gap-1 rounded bg-[#FFE386] text-black text-base font-medium font-sf-pro">
+      {text}
+    </div>
+  );
+}
+
+// Subcomponent for project status tag
+function ProjectStatusTag({ status }: { status: string }) {
+  return (
+    <div className="flex justify-center items-center px-2 py-1 gap-1 rounded bg-[#D4D4D4] text-black text-base font-medium font-sf-pro">
+      {status}
+    </div>
+  );
+}
+
 type ResidentialPropertyCardProps = ResidentialProject;
 
 export default function ResidentialPropertyCard({
@@ -24,9 +51,9 @@ export default function ResidentialPropertyCard({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-[1.02]">
+    <div className="flex flex-col w-[400px] bg-white rounded-xl overflow-hidden shadow-md font-sf-pro">
       {/* Cover Image */}
-      <div className="relative w-full h-48">
+      <div className="relative w-full h-[225px]">
         <Image
           src={imgSrc}
           alt={`${name} - ${projectType.join(', ')} in ${locality}`}
@@ -38,49 +65,44 @@ export default function ResidentialPropertyCard({
         />
       </div>
 
-      {/* Content */}
-      <div className="p-6 space-y-4">
+      {/* Main Content */}
+      <div className="flex flex-col p-4 gap-3">
         {/* Project Name and Locality */}
-        <div>
-          <div className="flex items-baseline gap-2">
-            <h3 className="text-2xl font-semibold font-mono">{name}</h3>
-            <span className="text-base text-gray-600">{locality}</span>
-          </div>
+        <div className="flex flex-col gap-1">
+          <h3 className="text-xl font-semibold text-[#323232] line-clamp-2 font-sf-pro">{name}</h3>
+          <p className="text-base text-[#666464] font-sf-pro">{locality}</p>
         </div>
 
-        {/* BHK Tags */}
-        <div className="flex flex-wrap gap-2">
-          {bhk.map((type) => (
-            <span
-              key={type}
-              className="px-4 py-2 rounded-full text-base bg-blue-100 text-blue-800 font-medium"
-            >
-              {type}
-            </span>
-          ))}
-        </div>
-
-        {/* Project Type Tags */}
-        <div className="flex flex-wrap gap-2">
-          {projectType.map((type) => (
-            <span
-              key={type}
-              className="px-4 py-2 rounded-full text-base bg-yellow-100 text-yellow-800 font-medium"
-            >
-              {type}
-            </span>
-          ))}
-        </div>
-
-        {/* Price and Status */}
-        <div className="flex justify-between items-center pt-2">
-          <div className="text-[#E55C5C] font-semibold text-lg">
-            {price.value}
+        {/* Configurations and Project Types */}
+        <div className="flex gap-3">
+          {/* BHK Configurations */}
+          <div className="flex-1 flex flex-col gap-2">
+            <span className="text-base text-gray-600 font-medium font-sf-pro">Configurations</span>
+            <div className="flex flex-wrap gap-2">
+              {bhk.map((type) => (
+                <ConfigurationTag key={type} text={type} />
+              ))}
+            </div>
           </div>
-          <div className="text-gray-600 text-lg">
-            {projectStatus}
+
+          {/* Project Types */}
+          <div className="flex-1 flex flex-col gap-2">
+            <span className="text-base text-gray-600 font-medium font-sf-pro">Project Type</span>
+            <div className="flex flex-wrap gap-2">
+              {projectType.map((type) => (
+                <ProjectTypeTag key={type} text={type} />
+              ))}
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* Price and Status Footer */}
+      <div className="flex justify-between items-center px-4 py-4 bg-[#F2F1F1] mt-auto">
+        <span className="font-semibold text-lg text-[#323232] font-sf-pro">
+          {price.value}
+        </span>
+        <ProjectStatusTag status={projectStatus} />
       </div>
     </div>
   );
