@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { Project, ApiResponse } from '@/types/project';
+import type { ResidentialProject, ResidentialApiResponse } from '@/types/project';
 
 export function useResidentialSearch(debounceMs: number = 300) {
   const [query, setQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<Project[]>([]);
+  const [searchResults, setSearchResults] = useState<ResidentialProject[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
@@ -11,14 +11,33 @@ export function useResidentialSearch(debounceMs: number = 300) {
   const [totalSearchResults, setTotalSearchResults] = useState(0);
   const lastQuery = useRef(query);
 
-  const formatProject = (project: ApiResponse['projects'][0]): Project => ({
+  const formatProject = (project: ResidentialApiResponse['projects'][0]): ResidentialProject => ({
     name: project.name,
-    locality: project.locality,
-    propertyType: project.propertyType,
-    unitSizes: project.unitSizes,
-    bhk: project.bhk,
+    locality: Array.isArray(project.localityNames) ? project.localityNames.join(', ') : '',
+    propertyType: project.projectType[0] || '',
+    unitSizes: project.configuration.value,
+    bhk: Array.isArray(project.bhk) ? project.bhk : [],
     brochureLink: project.brochureLink,
-    rera: project.rera
+    rera: project.rera,
+    certificateLink: project.certificateLink,
+    configuration: project.configuration,
+    coordinates: project.coordinates,
+    coverPhotoLink: project.coverPhotoLink,
+    endDate: project.endDate,
+    localityNames: project.localityNames,
+    mobile: project.mobile,
+    numberOfTowers: project.numberOfTowers,
+    photos: project.photos,
+    planPassingAuthority: project.planPassingAuthority,
+    price: project.price,
+    projectAddress: project.projectAddress,
+    projectLandArea: project.projectLandArea,
+    projectStatus: project.projectStatus,
+    projectType: Array.isArray(project.projectType) ? project.projectType : [],
+    promoterName: project.promoterName,
+    startDate: project.startDate,
+    totalUnits: project.totalUnits,
+    totalUnitsAvailable: project.totalUnitsAvailable
   });
 
   const searchProjects = useCallback(async () => {
@@ -42,7 +61,7 @@ export function useResidentialSearch(debounceMs: number = 300) {
         throw new Error('Failed to search projects');
       }
 
-      const data: ApiResponse = await response.json();
+      const data: ResidentialApiResponse = await response.json();
       const formattedProjects = data.projects.map(formatProject);
       
       // If query changed or it's first page, replace results

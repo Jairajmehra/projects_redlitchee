@@ -117,7 +117,7 @@ export default function ResidentialPage() {
         {/* No Results State */}
         {isSearching && !loading && searchResults.length === 0 && (
           <div className="text-center mt-8 text-gray-600">
-            No projects found matching "{query}"
+            No projects found matching &ldquo;{query}&rdquo;
           </div>
         )}
       </main>

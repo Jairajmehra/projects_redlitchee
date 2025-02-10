@@ -26,8 +26,7 @@ export default function CommercialMapPage() {
     loading: loadingProjects, 
     error: errorProjects, 
     hasMore, 
-    loadMore,
-    totalProjectCount 
+    loadMore
   } = useInfiniteCommercialProjects(6);
   
   const observer = useRef<IntersectionObserver | null>(null);

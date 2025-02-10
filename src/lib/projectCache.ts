@@ -1,14 +1,43 @@
-import type { Project, ApiResponse, CommercialProject, CommercialApiResponse } from '@/types/project';
+import type { ResidentialProject, ResidentialApiResponse, CommercialProject, CommercialApiResponse } from '@/types/project';
 
-let projectCache: Project[] | null = null;
+let projectCache: ResidentialProject[] | null = null;
 let commercialProjectCache: CommercialProject[] | null = null;
 
-export async function getAllProjects(): Promise<Project[]> {
+const formatResidentialProject = (project: ResidentialApiResponse['projects'][0]): ResidentialProject => ({
+  name: project.name,
+  locality: Array.isArray(project.localityNames) ? project.localityNames.join(', ') : '',
+  propertyType: project.projectType[0] || '',
+  unitSizes: project.configuration.value,
+  bhk: Array.isArray(project.bhk) ? project.bhk : [],
+  brochureLink: project.brochureLink,
+  rera: project.rera,
+  certificateLink: project.certificateLink,
+  configuration: project.configuration,
+  coordinates: project.coordinates,
+  coverPhotoLink: project.coverPhotoLink,
+  endDate: project.endDate,
+  localityNames: project.localityNames,
+  mobile: project.mobile,
+  numberOfTowers: project.numberOfTowers,
+  photos: project.photos,
+  planPassingAuthority: project.planPassingAuthority,
+  price: project.price,
+  projectAddress: project.projectAddress,
+  projectLandArea: project.projectLandArea,
+  projectStatus: project.projectStatus,
+  projectType: Array.isArray(project.projectType) ? project.projectType : [],
+  promoterName: project.promoterName,
+  startDate: project.startDate,
+  totalUnits: project.totalUnits,
+  totalUnitsAvailable: project.totalUnitsAvailable
+});
+
+export async function getAllProjects(): Promise<ResidentialProject[]> {
   if (projectCache) {
     return projectCache;
   }
 
-  const projects: Project[] = [];
+  const projects: ResidentialProject[] = [];
   let page = 1;
   const limit = 100;
 
@@ -21,8 +50,8 @@ export async function getAllProjects(): Promise<Project[]> {
       }
     );
 
-    const data: ApiResponse = await res.json();
-    projects.push(...data.projects);
+    const data: ResidentialApiResponse = await res.json();
+    projects.push(...data.projects.map(formatResidentialProject));
 
     if (projects.length >= data.total) break;
     page++;
