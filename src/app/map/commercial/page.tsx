@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import GoogleMap from "@/components/GoogleMap";
 import { useInfiniteCommercialProjects } from '@/hooks/useInfiniteCommercialProjects';
 import { useCommercialMapMarkers } from '@/hooks/useCommercialMapMarkers';
+import { useUserLocation } from '@/hooks/useUserLocation';
 
 // Ahmedabad coordinates
 const AHMEDABAD_CENTER = {
@@ -16,6 +17,9 @@ const AHMEDABAD_CENTER = {
 
 export default function CommercialMapPage() {
   const pathname = usePathname();
+  
+  // Get user location
+  const { location, loading: loadingLocation, error: locationError } = useUserLocation(AHMEDABAD_CENTER);
   
   // Fetch all map markers at once
   const { markers, loading: loadingMarkers } = useCommercialMapMarkers();
@@ -59,17 +63,30 @@ export default function CommercialMapPage() {
       <div className="flex h-[calc(100vh-9rem)]">
         {/* Map Section */}
         <div className="flex-1 bg-gray-100 relative">
-          {!markers.length && loadingMarkers && (
+          {/* Loading States */}
+          {(loadingLocation || (!markers.length && loadingMarkers)) && (
             <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-75 z-10">
               <div className="text-center">
                 <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent" />
-                <p className="mt-2 text-gray-600">Loading map markers...</p>
+                <p className="mt-2 text-gray-600">
+                  {loadingLocation ? 'Getting your location...' : 'Loading map markers...'}
+                </p>
               </div>
             </div>
           )}
+          
+          {/* Location Error Message */}
+          {locationError && (
+            <div className="absolute top-4 left-4 right-4 z-10">
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                <p className="text-yellow-700">{locationError}</p>
+              </div>
+            </div>
+          )}
+          
           <GoogleMap
-            center={AHMEDABAD_CENTER}
-            zoom={12}
+            center={location || AHMEDABAD_CENTER}
+            zoom={location ? 15 : 12}
             markers={markers}
           />
         </div>
