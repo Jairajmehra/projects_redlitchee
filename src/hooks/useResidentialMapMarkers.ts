@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { CommercialApiResponse } from '@/types/project';
+import type { ResidentialApiResponse } from '@/types/project';
 
 interface MapMarker {
   position: { lat: number; lng: number };
@@ -40,7 +40,7 @@ function getExtendedBounds(viewport: Viewport, extensionFactor = EXTENSION_FACTO
   };
 }
 
-export function useCommercialMapMarkers(debounceMs: number = DEBOUNCE_MS) {
+export function useResidentialMapMarkers(debounceMs: number = DEBOUNCE_MS) {
   const [markers, setMarkers] = useState<MapMarker[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -87,7 +87,6 @@ export function useCommercialMapMarkers(debounceMs: number = DEBOUNCE_MS) {
   const hasViewportChangedSignificantly = useCallback((oldViewport: Viewport | null, newViewport: Viewport) => {
     if (!oldViewport) return true;
 
-    // Calculate the change in viewport dimensions
     const latChange = Math.abs(
       (oldViewport.maxLat - oldViewport.minLat) - (newViewport.maxLat - newViewport.minLat)
     );
@@ -95,7 +94,6 @@ export function useCommercialMapMarkers(debounceMs: number = DEBOUNCE_MS) {
       (oldViewport.maxLng - oldViewport.minLng) - (newViewport.maxLng - newViewport.minLng)
     );
 
-    // Calculate the change in viewport center
     const oldCenterLat = (oldViewport.maxLat + oldViewport.minLat) / 2;
     const oldCenterLng = (oldViewport.maxLng + oldViewport.minLng) / 2;
     const newCenterLat = (newViewport.maxLat + newViewport.minLat) / 2;
@@ -104,9 +102,8 @@ export function useCommercialMapMarkers(debounceMs: number = DEBOUNCE_MS) {
     const centerLatChange = Math.abs(newCenterLat - oldCenterLat);
     const centerLngChange = Math.abs(newCenterLng - oldCenterLng);
 
-    // Define thresholds for significant changes
-    const ZOOM_THRESHOLD = 0.1; // 10% change in viewport size
-    const PAN_THRESHOLD = 0.05; // 5% of viewport size
+    const ZOOM_THRESHOLD = 0.1;
+    const PAN_THRESHOLD = 0.05;
 
     const viewportHeight = oldViewport.maxLat - oldViewport.minLat;
     const viewportWidth = oldViewport.maxLng - oldViewport.minLng;
@@ -123,19 +120,16 @@ export function useCommercialMapMarkers(debounceMs: number = DEBOUNCE_MS) {
   const getCachedMarkers = useCallback((viewport: Viewport): MapMarker[] | null => {
     const now = Date.now();
     
-    // Remove expired entries
     cacheRef.current = cacheRef.current.filter(
       entry => now - entry.timestamp < CACHE_EXPIRY
     );
 
-    // Find a cache entry that contains our viewport
     const cacheEntry = cacheRef.current.find(entry => 
       viewportContains(entry.viewport, viewport)
     );
 
     if (!cacheEntry) return null;
 
-    // Filter markers to only those within the requested viewport
     return cacheEntry.markers.filter(marker => 
       isPointInViewport(marker.position.lat, marker.position.lng, viewport)
     );
@@ -145,14 +139,12 @@ export function useCommercialMapMarkers(debounceMs: number = DEBOUNCE_MS) {
   const addToCache = useCallback((viewport: Viewport, markers: MapMarker[]) => {
     const now = Date.now();
     
-    // Add new entry
     cacheRef.current.push({
       viewport,
       markers,
       timestamp: now
     });
 
-    // Keep only the most recent entries
     if (cacheRef.current.length > CACHE_SIZE) {
       cacheRef.current = cacheRef.current.slice(-CACHE_SIZE);
     }
@@ -208,18 +200,25 @@ export function useCommercialMapMarkers(debounceMs: number = DEBOUNCE_MS) {
 
         console.log(`🗺️ Fetching page ${page} of markers...`);
         const response = await fetch(
-          `https://test-vision-api-389008.el.r.appspot.com/commercial_projects_viewport?${queryParams}`
+          `https://test-vision-api-389008.el.r.appspot.com/residential_projects_viewport?${queryParams}`
         );
 
         if (!response.ok) {
           throw new Error('Failed to fetch map markers');
         }
 
-        const data: CommercialApiResponse = await response.json();
+        const data: ResidentialApiResponse = await response.json();
         console.log(`🗺️ Received ${data.projects.length} projects for page ${page}`);
         
         const validMarkers = data.projects.map(project => {
-          const [lat, lng] = project.Coordinates.split(',').map(str => parseFloat(str.trim()));
+          // Handle both lowercase 'coordinates' and uppercase 'Coordinates'
+          const coordinatesStr = project.coordinates || (project as any).Coordinates;
+          if (!coordinatesStr) {
+            console.log('🚫 Missing coordinates for project:', project.name);
+            return null;
+          }
+
+          const [lat, lng] = coordinatesStr.split(',').map((str: string) => parseFloat(str.trim()));
           
           if (isNaN(lat) || isNaN(lng)) {
             console.log('🚫 Invalid coordinates for project:', project.name);
@@ -231,7 +230,7 @@ export function useCommercialMapMarkers(debounceMs: number = DEBOUNCE_MS) {
             title: project.name,
             id: project.rera,
             coverImage: project.coverPhotoLink,
-            projectType: project.aboutProject || 'Commercial Project'
+            projectType: project.projectType[0] || 'Residential Project'
           };
         }).filter((marker): marker is MapMarker => marker !== null);
 
@@ -281,13 +280,12 @@ export function useCommercialMapMarkers(debounceMs: number = DEBOUNCE_MS) {
       clearTimeout(timeoutRef.current);
     }
 
-    // Only update if the viewport has changed significantly
     if (hasViewportChangedSignificantly(lastViewportRef.current, newViewport)) {
       timeoutRef.current = setTimeout(() => {
         setViewport(newViewport);
       }, debounceMs);
     }
-  }, [debounceMs]);
+  }, [debounceMs, hasViewportChangedSignificantly]);
 
   // Update markers when viewport changes
   useEffect(() => {

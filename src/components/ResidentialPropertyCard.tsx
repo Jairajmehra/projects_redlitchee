@@ -51,7 +51,7 @@ export default function ResidentialPropertyCard({
   };
 
   return (
-    <div className="flex flex-col w-[400px] bg-white rounded-xl overflow-hidden shadow-md font-sf-pro">
+    <div className="flex flex-col w-full bg-white rounded-xl overflow-hidden shadow-md font-sf-pro">
       {/* Cover Image */}
       <div className="relative w-full h-[225px]">
         <Image

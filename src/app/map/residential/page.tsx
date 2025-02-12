@@ -1,12 +1,12 @@
 'use client';
 
-import { useRef, useCallback, useState, useEffect } from 'react';
+import { useRef, useCallback, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import CommercialPropertyCard from "@/components/CommercialPropertyCard";
+import ResidentialPropertyCard from "@/components/ResidentialPropertyCard";
 import Navbar from "@/components/Navbar";
 import GoogleMap from "@/components/GoogleMap";
-import { useCommercialMapMarkers } from '@/hooks/useCommercialMapMarkers';
-import { useInfiniteCommercialProjectsViewport } from '@/hooks/useInfiniteCommercialProjectsViewport';
+import { useResidentialMapMarkers } from '@/hooks/useResidentialMapMarkers';
+import { useInfiniteResidentialProjectsViewport } from '@/hooks/useInfiniteResidentialProjectsViewport';
 import { useUserLocation } from '@/hooks/useUserLocation';
 
 // Ahmedabad coordinates
@@ -22,7 +22,6 @@ interface Viewport {
   maxLng: number;
 }
 
-const DEBOUNCE_MS = 800; // Increased debounce time for smoother experience
 const EXTENSION_FACTOR = 0.2; // 20% extension for viewport bounds
 
 // Utility function to calculate extended bounds
@@ -37,26 +36,26 @@ function getExtendedBounds(viewport: Viewport): Viewport {
   };
 }
 
-export default function CommercialMapPage() {
+export default function ResidentialMapPage() {
   const pathname = usePathname();
   const [viewport, setViewport] = useState<Viewport | null>(null);
+  const [isLoadingNewArea, setIsLoadingNewArea] = useState(false);
   
   // Get user location
   const { location, loading: loadingLocation, error: locationError } = useUserLocation(AHMEDABAD_CENTER);
   
   // Fetch all map markers at once
-  const { markers, loading: loadingMarkers, setViewport: setMarkerViewport } = useCommercialMapMarkers();
+  const { markers, loading: loadingMarkers, setViewport: setMarkerViewport } = useResidentialMapMarkers();
   
   // Fetch project cards with viewport-based pagination
   const { 
     projects, 
-    loading: loadingCards, 
+    loading: loadingCards,
     error: errorCards, 
     hasMore, 
     loadMore,
-    totalProjectCount,
-    resetPage 
-  } = useInfiniteCommercialProjectsViewport(viewport, 6);
+    totalProjectCount
+  } = useInfiniteResidentialProjectsViewport(viewport, 6);
   
   const observer = useRef<IntersectionObserver | null>(null);
   
@@ -74,7 +73,7 @@ export default function CommercialMapPage() {
     if (node) observer.current.observe(node);
   }, [loadingCards, hasMore, loadMore]);
 
-  // Handle viewport changes with increased debounce time
+  // Handle viewport changes
   const handleViewportChange = useCallback((newViewport: Viewport) => {
     // For markers: Calculate extended bounds (20% extension)
     const extendedViewport = getExtendedBounds(newViewport);
@@ -88,13 +87,6 @@ export default function CommercialMapPage() {
     // Update cards with exact viewport
     setViewport(newViewport);
   }, [setMarkerViewport]);
-
-  // Reset page when viewport changes
-  useEffect(() => {
-    if (viewport) {
-      resetPage();
-    }
-  }, [viewport, resetPage]);
 
   const [mapTypeId, setMapTypeId] = useState<'roadmap' | 'hybrid'>('roadmap');
 
@@ -187,7 +179,7 @@ export default function CommercialMapPage() {
                   className="flex justify-center"
                 >
                   <div className="w-full max-w-[400px]">
-                    <CommercialPropertyCard {...project} />
+                    <ResidentialPropertyCard {...project} />
                   </div>
                 </div>
               ))}
