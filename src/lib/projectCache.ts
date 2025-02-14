@@ -9,12 +9,13 @@ export async function getAllProjects(): Promise<Project[]> {
   }
 
   const projects: Project[] = [];
-  let page = 1;
+  const page = 1;
   const limit = 100;
+  let offset = 0;
 
   while (true) {
     const res = await fetch(
-      `https://test-vision-api-389008.el.r.appspot.com/projects?page=${page}&limit=${limit}`,
+      `https://test-vision-api-389008.el.r.appspot.com/residential_projects?page=${page}&limit=${limit}&offset=${offset}`,
       {
         next: { revalidate: 3600 },
         cache: 'force-cache',
@@ -25,7 +26,7 @@ export async function getAllProjects(): Promise<Project[]> {
     projects.push(...data.projects);
 
     if (projects.length >= data.total) break;
-    page++;
+    offset+=limit;
   }
 
   projectCache = projects;
@@ -38,12 +39,13 @@ export async function getAllCommercialProjects(): Promise<CommercialProject[]> {
   }
 
   const projects: CommercialProject[] = [];
-  let page = 1;
+  const page = 1;
   const limit = 100;
+  let offset = 0;
 
   while (true) {
     const res = await fetch(
-      `https://test-vision-api-389008.el.r.appspot.com/commercial_projects?page=${page}&limit=${limit}`,
+      `https://test-vision-api-389008.el.r.appspot.com/commercial_projects?page=${page}&limit=${limit}&offset=${offset}`,
       {
         next: { revalidate: 3600 },
         cache: 'force-cache',
@@ -83,7 +85,7 @@ export async function getAllCommercialProjects(): Promise<CommercialProject[]> {
     projects.push(...formattedProjects);
 
     if (!data.has_more) break;
-    page++;
+    offset+=limit;
   }
 
   commercialProjectCache = projects;

@@ -35,9 +35,13 @@ export default function CommercialPage() {
     observer.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting) {
         if (query.trim()) {
-          hasMoreSearch && loadMoreSearch();
+          if (hasMoreSearch) {
+            loadMoreSearch();
+          }
         } else {
-          hasMoreAll && loadMoreAll();
+          if (hasMoreAll) {
+            loadMoreAll();
+          }
         }
       }
     });
@@ -103,7 +107,7 @@ export default function CommercialPage() {
         {/* No Results State */}
         {query.trim() && !loading && searchResults.length === 0 && (
           <div className="text-center mt-8 text-gray-600">
-            No projects found matching "{query}"
+            No projects found matching &quot;{query}&quot;
           </div>
         )}
       </main>
