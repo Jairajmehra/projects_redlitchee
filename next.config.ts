@@ -5,7 +5,8 @@ const nextConfig: NextConfig = {
   images: {
     domains: [
       'test-vision-api-389008.el.r.appspot.com',
-      'storage.googleapis.com'
+      'storage.googleapis.com',
+      'townplanmap-f8f37.firebasestorage.app'
     ],
   },
   env: {

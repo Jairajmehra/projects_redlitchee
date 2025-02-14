@@ -24,7 +24,7 @@ export function useCommercialSearch(debounceMs: number = 300) {
       setError(null);
 
       const response = await fetch(
-        `https://test-vision-api-389008.el.r.appspot.com/search_commercial_projects?q=${encodeURIComponent(query)}&page=${page}&limit=6`
+        `https://test-vision-api-389008.el.r.appspot.com/commercial_projects?q=${encodeURIComponent(query)}&page=${page}&limit=6`
       );
 
       if (!response.ok) {

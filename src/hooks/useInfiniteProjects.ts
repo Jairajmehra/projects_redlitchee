@@ -17,7 +17,7 @@ export function useInfiniteProjects(limit: number = 6) {
 
       const offset = (page - 1) * limit;
       const response = await fetch(
-        `https://test-vision-api-389008.el.r.appspot.com/projects?page=${page}&limit=${limit}&offset=${offset}`
+        `https://test-vision-api-389008.el.r.appspot.com/residential_projects?page=${page}&limit=${limit}&offset=${offset}`
       );
       
       if (!response.ok) {
